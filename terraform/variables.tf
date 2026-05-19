@@ -27,12 +27,35 @@ variable "openai_location" {
   default     = "eastus"
 }
 
-# Naming helper — produces a consistent short suffix like "askmydocs-dev"
 locals {
   prefix = "${var.project}-${var.environment}"
+
   tags = {
     project     = var.project
     environment = var.environment
     managed_by  = "terraform"
+  }
+
+  # SKU map — setting environment = "dev" picks the free/cheap tier automatically.
+  # Override individual values by editing this block; everything downstream
+  # references local.skus.* so the change propagates to every module.
+  skus = {
+    # B1 is the cheapest tier that supports always-on and custom domains.
+    # P1v3 is the recommended production starting point.
+    app_service_plan = var.environment == "prod" ? "P1v3" : "B1"
+
+    # AI Search free tier: 1 index, 50MB — enough for dev with a handful of PDFs.
+    # basic is the cheapest paid tier and supports managed identity auth.
+    ai_search = var.environment == "prod" ? "basic" : "free"
+
+    # SignalR free tier: 20 concurrent connections, 20K messages/day — fine for dev.
+    signalr = var.environment == "prod" ? "Standard" : "Free"
+
+    # OpenAI deployment capacity in thousands of tokens per minute.
+    # 10 is the minimum and plenty for interactive dev/test use.
+    openai_capacity = var.environment == "prod" ? 30 : 10
+
+    # Log Analytics retention. Minimum billable period is 30 days.
+    log_retention_days = var.environment == "prod" ? 90 : 30
   }
 }

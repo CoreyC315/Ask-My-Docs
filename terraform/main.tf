@@ -17,10 +17,11 @@ resource "azurerm_user_assigned_identity" "main" {
 module "monitoring" {
   source = "./modules/monitoring"
 
-  prefix   = local.prefix
-  location = azurerm_resource_group.main.location
-  rg_name  = azurerm_resource_group.main.name
-  tags     = local.tags
+  prefix         = local.prefix
+  location       = azurerm_resource_group.main.location
+  rg_name        = azurerm_resource_group.main.name
+  tags           = local.tags
+  retention_days = local.skus.log_retention_days
 }
 
 module "keyvault" {
