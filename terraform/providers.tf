@@ -16,15 +16,7 @@ terraform {
     }
   }
 
-  # Remote state in Azure Blob Storage.
-  # Before running `terraform init`, create this storage account manually
-  # (or via a bootstrap script) — it can't manage the bucket that holds its own state.
-  backend "azurerm" {
-    resource_group_name  = "rg-tfstate"
-    storage_account_name = "staskmydocstfstate"
-    container_name       = "tfstate"
-    key                  = "askmydocs.terraform.tfstate"
-  }
+
 }
 
 provider "azurerm" {

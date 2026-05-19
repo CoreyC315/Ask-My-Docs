@@ -24,6 +24,31 @@ module "monitoring" {
   retention_days = local.skus.log_retention_days
 }
 
+module "storage" {
+  source = "./modules/storage"
+
+  prefix   = local.prefix
+  location = azurerm_resource_group.main.location
+  rg_name  = azurerm_resource_group.main.name
+  tags     = local.tags
+}
+
+module "compute" {
+  source = "./modules/compute"
+
+  prefix               = local.prefix
+  location             = azurerm_resource_group.main.location
+  rg_name              = azurerm_resource_group.main.name
+  tags                 = local.tags
+  app_service_plan_sku = local.skus.app_service_plan
+  identity_id          = azurerm_user_assigned_identity.main.id
+
+  storage_account_name              = module.storage.account_name
+  storage_primary_connection_string = module.storage.primary_connection_string
+
+  appinsights_connection_string = module.monitoring.connection_string
+}
+
 module "keyvault" {
   source = "./modules/keyvault"
 
