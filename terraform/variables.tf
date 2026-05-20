@@ -40,10 +40,9 @@ locals {
   # Override individual values by editing this block; everything downstream
   # references local.skus.* so the change propagates to every module.
   skus = {
-    # F1 is free shared infrastructure — no VM quota required, unblocks new subscriptions.
-    # Upgrade to B1 once Azure approves a quota increase for the subscription.
+    # B1 is the cheapest tier that supports always-on and custom domains.
     # P1v3 is the recommended production starting point.
-    app_service_plan = var.environment == "prod" ? "P1v3" : "F1"
+    app_service_plan = var.environment == "prod" ? "P1v3" : "B1"
 
     # AI Search free tier: 1 index, 50MB — enough for dev with a handful of PDFs.
     # basic is the cheapest paid tier and supports managed identity auth.
