@@ -28,9 +28,9 @@ provider "azurerm" {
       recover_soft_deleted_key_vaults = true
     }
     resource_group {
-      # Prevent Terraform from deleting a resource group that still has
-      # resources in it — a safeguard against `terraform destroy` accidents.
-      prevent_deletion_if_contains_resources = true
+      # Set to false so `terraform destroy` can delete the resource group even
+      # if Azure auto-created resources inside it (e.g. App Insights Smart Detection).
+      prevent_deletion_if_contains_resources = false
     }
   }
 }
