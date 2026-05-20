@@ -62,7 +62,8 @@ resource "azurerm_linux_web_app" "main" {
     application_stack {
       node_version = "20-lts"
     }
-    always_on = true
+    # always_on requires Basic tier (B1) or above — not available on F1 free tier.
+    always_on = var.app_service_plan_sku == "F1" ? false : true
   }
 
   app_settings = {
