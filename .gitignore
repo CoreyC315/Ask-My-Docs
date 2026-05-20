@@ -43,6 +43,15 @@ terraform.rc
 # Uncomment the line below if you want to ignore planout files.
 # planout
 
+# Functions — local settings contain real secrets
+functions/local.settings.json
+functions/dist/
+functions/node_modules/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+
 # Obsidian — ignore personal state, keep shared config
 docs/.obsidian/workspace.json
 docs/.obsidian/workspace-mobile.json

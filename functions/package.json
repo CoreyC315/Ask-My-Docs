@@ -1,0 +1,27 @@
+{
+  "name": "askmydocs-functions",
+  "version": "1.0.0",
+  "description": "Ingest and query functions for AskMyDocs.",
+  "main": "dist/src/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prestart": "npm run build",
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.0",
+    "@azure/identity": "^4.4.0",
+    "@azure/search-documents": "^12.1.0",
+    "@azure/storage-blob": "^12.25.0",
+    "jsonwebtoken": "^9.0.2",
+    "openai": "^4.67.0",
+    "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^20.16.0",
+    "@types/pdf-parse": "^1.1.4",
+    "typescript": "^5.6.0"
+  }
+}

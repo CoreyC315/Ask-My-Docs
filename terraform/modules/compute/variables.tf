@@ -40,3 +40,18 @@ variable "appinsights_connection_string" {
   type        = string
   sensitive   = true
 }
+
+variable "keyvault_name" {
+  description = "Key Vault name — used to build Key Vault reference strings in app settings."
+  type        = string
+}
+
+variable "search_endpoint" {
+  description = "AI Search REST endpoint for the ingest and query functions."
+  type        = string
+}
+
+variable "signalr_hostname" {
+  description = "SignalR service hostname — passed to the frontend so it knows where to connect."
+  type        = string
+}

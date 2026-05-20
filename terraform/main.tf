@@ -33,6 +33,32 @@ module "storage" {
   tags     = local.tags
 }
 
+module "signalr" {
+  source = "./modules/signalr"
+
+  prefix   = local.prefix
+  location = azurerm_resource_group.main.location
+  rg_name  = azurerm_resource_group.main.name
+  tags     = local.tags
+  sku      = local.skus.signalr
+}
+
+# Store the SignalR connection string in Key Vault so the Function App
+# can read it via a Key Vault reference instead of a plain env var.
+resource "azurerm_key_vault_secret" "signalr_connection_string" {
+  name         = "signalr-connection-string"
+  value        = module.signalr.connection_string
+  key_vault_id = module.keyvault.key_vault_id
+}
+
+module "iam" {
+  source = "./modules/iam"
+
+  principal_id       = azurerm_user_assigned_identity.main.principal_id
+  storage_account_id = module.storage.account_id
+  search_service_id  = module.ai.search_id
+}
+
 module "compute" {
   source = "./modules/compute"
 
@@ -47,6 +73,21 @@ module "compute" {
   storage_primary_connection_string = module.storage.primary_connection_string
 
   appinsights_connection_string = module.monitoring.connection_string
+  keyvault_name                 = module.keyvault.key_vault_name
+  search_endpoint               = module.ai.search_endpoint
+  signalr_hostname              = module.signalr.hostname
+}
+
+module "ai" {
+  source = "./modules/ai"
+
+  prefix          = local.prefix
+  location        = azurerm_resource_group.main.location
+  openai_location = var.openai_location
+  rg_name         = azurerm_resource_group.main.name
+  tags            = local.tags
+  openai_capacity = local.skus.openai_capacity
+  ai_search_sku   = local.skus.ai_search
 }
 
 module "keyvault" {

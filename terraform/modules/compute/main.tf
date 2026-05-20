@@ -31,6 +31,11 @@ resource "azurerm_linux_function_app" "main" {
     identity_ids = [var.identity_id]
   }
 
+  # Required when using a user-assigned identity for Key Vault references.
+  # Without this, Azure tries the system-assigned identity (which doesn't exist)
+  # and the @Microsoft.KeyVault(...) app setting values fail to resolve.
+  key_vault_reference_identity_id = var.identity_id
+
   site_config {
     application_stack {
       node_version = "20"
@@ -38,9 +43,29 @@ resource "azurerm_linux_function_app" "main" {
   }
 
   app_settings = {
-    APPLICATIONINSIGHTS_CONNECTION_STRING = var.appinsights_connection_string
-    # Tells App Insights SDK which identity to use when authenticating.
+    APPLICATIONINSIGHTS_CONNECTION_STRING      = var.appinsights_connection_string
     ApplicationInsightsAgent_EXTENSION_VERSION = "~4"
+
+    # OpenAI — using direct API key (Azure OpenAI approval pending).
+    # Key Vault reference syntax: Azure resolves this at runtime so the key
+    # never appears in plain text in app settings or Terraform state.
+    OPENAI_API_KEY = "@Microsoft.KeyVault(VaultName=${var.keyvault_name};SecretName=openai-api-key)"
+    OPENAI_MODE    = "direct"
+
+    # AI Search endpoint — the ingest function pushes chunks here,
+    # the query function searches here.
+    AZURE_SEARCH_ENDPOINT   = var.search_endpoint
+    AZURE_SEARCH_INDEX_NAME = "documents"
+
+    # SignalR connection string — resolved from Key Vault at runtime.
+    AZURE_SIGNALR_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.keyvault_name};SecretName=signalr-connection-string)"
+
+    # Which blob container to watch for new PDF uploads.
+    DOCUMENTS_CONTAINER = "documents"
+
+    # Storage account name — used by the upload function to write blobs
+    # via managed identity (connection string not needed in Azure).
+    AZURE_STORAGE_ACCOUNT_NAME = var.storage_account_name
   }
 }
 

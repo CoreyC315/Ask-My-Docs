@@ -18,13 +18,13 @@ variable "environment" {
 variable "location" {
   description = "Azure region for all resources."
   type        = string
-  default     = "eastus"
+  default     = "westus2"
 }
 
 variable "openai_location" {
   description = "Azure region for the OpenAI account. GPT-4o and Ada are not available in every region."
   type        = string
-  default     = "eastus"
+  default     = "westus2"
 }
 
 locals {
@@ -49,7 +49,8 @@ locals {
     ai_search = var.environment == "prod" ? "basic" : "free"
 
     # SignalR free tier: 20 concurrent connections, 20K messages/day — fine for dev.
-    signalr = var.environment == "prod" ? "Standard" : "Free"
+    # Note: SignalR SKU names include the tier suffix (Free_F1, Standard_S1).
+    signalr = var.environment == "prod" ? "Standard_S1" : "Free_F1"
 
     # OpenAI deployment capacity in thousands of tokens per minute.
     # 10 is the minimum and plenty for interactive dev/test use.
